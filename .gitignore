@@ -1,0 +1,12 @@
+.DS_Store 
+ 
+*.terraform
+*.tfstate 
+*.tfstate.backup 
+*.tfstate.d 
+.idea
+ 
+*.pem 
+
+*/lambda/*.zip
+/src/tf_plan
