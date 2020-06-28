@@ -1,0 +1,8 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .name }}{{ $.Values.ingress.path }}
+{{- end }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  echo "Your application is exposed at the following url: http://{{ $.Values.service.name }}:SERVICEPORT{{ $.Values.ingress.path }}"
+{{- end }}

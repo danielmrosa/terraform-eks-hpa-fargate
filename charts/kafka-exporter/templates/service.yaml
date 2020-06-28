@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    app: {{ template "kafka-exporter.name" . }}
+    chart: {{ template "kafka-exporter.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    prometheus.io/health_path: {{ .Values.livenessProbe.httpGet.path | default "/" }}
+    prometheus.io/metrics_path: {{ .Values.metricsPath | default "/metrics" }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  {{ range $i, $var := .Values.service.ports -}}
+  - name: {{ $var.name }}
+    port: {{ $var.port }}
+    targetPort: {{ $var.port }}
+  {{ end }}
+  selector:
+    app: {{ template "kafka-exporter.name" . }}
+    release: {{ .Release.Name }}
+---

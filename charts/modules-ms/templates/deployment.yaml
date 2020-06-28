@@ -1,0 +1,119 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}-deployment-1
+  labels:
+    app: {{ template "modules-ms.name" . }}
+    chart: {{ template "modules-ms.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  {{ if .Values.hpa.enabled }}
+  annotations:
+    {{ range $i, $var := .Values.annotations -}}
+    {{ $var.name }}: {{ $var.value | quote}}
+    {{ end }}
+  {{ end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "modules-ms.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "modules-ms.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceaccount | default "default" -}}
+      {{ if .Values.consulnode.enabled }}
+      initContainers:
+        - name: consulnode-init
+          image: "{{.Values.imageCredentials.registry}}/{{ .Values.consulnode.repository }}"
+          volumeMounts:
+            - name: consul-config
+              mountPath: {{ .Values.consulnode.path }}  
+          env:
+          {{ range $i, $var := .Values.envVars -}}
+          - name: {{ $var.name | upper}}
+            value: {{ $var.value | quote}}
+          {{ end }}
+      {{ end }}
+      containers:
+        - name: {{ .Values.service.name }}
+          image: "{{.Values.imageCredentials.registry}}/{{ .Values.image.repository }}:{{ .Values.image.blueTag | default .Values.image.tag }}"
+          {{ if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+              scheme: {{ .Values.livenessProbe.httpGet.scheme }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+              scheme: {{ .Values.readinessProbe.httpGet.scheme }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          {{ end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{ if .Values.startcommand.enabled }}
+          command: {{ .Values.startcommand.value }}
+          {{ end }}
+          env:
+          {{ range $i, $var := .Values.envVars -}}
+          - name: {{ $var.name | upper}}
+            value: {{ $var.value | quote}}
+          {{ end }}
+          {{- if or (.Values.configmaps.enabled) (.Values.vault.enabled) (.Values.consulnode.enabled) -}}
+          volumeMounts:
+          {{ end }}
+          {{ if .Values.configmaps.enabled }}
+            - name: {{ .Values.service.name }}-data
+              mountPath: /data
+          {{ end }}
+          {{ if .Values.consulnode.enabled }}
+            - name: consul-config
+              mountPath: {{ .Values.consulnode.path }}
+          {{ end }}          
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+     {{ if or (.Values.configmaps.enabled) (.Values.vault.enabled) (.Values.consulnode.enabled) }}
+      volumes:
+     {{ end }}
+     {{ if .Values.configmaps.enabled }}
+      - name: {{ .Values.service.name }}-data
+        configMap:
+          name: {{ .Values.service.name }}-data
+          defaultMode: 0700
+     {{ end }}
+     {{ if .Values.vault.enabled }}
+      - name: app-creds
+        emptyDir: {}
+      - name: vault-token
+        emptyDir: {}      
+      {{ end }}
+     {{ if .Values.consulnode.enabled }}
+      - name: consul-config
+        emptyDir: {}     
+      {{ end }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

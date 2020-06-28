@@ -1,1 +1,1 @@
-# terraform-eks-hpa-fargate
+# Terraform / EKS / HPA / Observability / Fargate

@@ -1,0 +1,83 @@
+replicaCount: 1
+
+hub: quay.io/kiali
+image: kiali
+tag: v1.4
+
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: false
+  name:
+
+global:
+  imagePullSecrets: []
+podSecurityContext: {}
+
+securityContext: {}
+
+resources:
+  limits:
+    cpu: 512m
+    memory: 1024Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+defaultTolerations: []
+tolerations: ""
+
+affinity: {}
+
+contextPath: /kiali # The root context path to access the Kiali UI.
+podAntiAffinityLabelSelector: []
+podAntiAffinityTermLabelSelector: []
+
+ingress:
+  enabled: true
+  hosts:
+    - kiali.test
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  tls:
+    # Secrets must be manually created in the namespace.
+    # - secretName: kiali-tls
+    #   hosts:
+    #     - kiali.local
+  path: /*
+service:
+  name: kiali
+  type: NodePort
+  ports:
+  - name: http
+    port: 20001
+    target_port: 20001
+security:
+  enabled: false
+  cert_file: /kiali-cert/cert-chain.pem
+  private_key_file: /kiali-cert/key.pem
+createDemoSecret: true
+dashboard:
+  auth:
+    strategy: login # Can be anonymous, login, openshift, or ldap
+    # ldap: # This is required to use the ldap strategy
+    #   ldap_base: "DC=example,DC=com"
+    #   ldap_bind_dn: "CN={USERID},OU=xyz,OU=Users,OU=Accounts,DC=example,DC=com"
+    #   ldap_group_filter: "(cn=%s)"
+    #   ldap_host: "ldap-service.ldap-namespace"
+    #   ldap_insecure_skip_verify: true
+    #   ldap_mail_id_key: "mail"
+    #   ldap_member_of_key: "memberOf"
+    #   ldap_port: 123
+    #   ldap_role_filter: ".*xyz.*"
+    #   ldap_search_filter: "(&(name={USERID}))"
+    #   ldap_use_ssl: false
+    #   ldap_user_filter: "(cn=%s)"
+    #   ldap_user_id_key: "cn"
+  secretName: kiali # You must create a secret with this name - one is not provided out-of-box.
+  viewOnlyMode: false # Bind the service account to a role with only read access
+  grafanaURL: https://grafana.itiaws.dev
+  jaegerURL: https://jaeger-tracing.itiaws.dev
+prometheusAddr: http://prometheus:9090
