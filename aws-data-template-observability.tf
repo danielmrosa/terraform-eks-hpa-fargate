@@ -65,6 +65,6 @@ data "template_file" "grafana-extravars" {
 }
 
 
-data "template_file" "kafka-exporter-extravars" {
-  template = file("${path.module}/templates/kafka-exporter-extravars.tpl")
-}
+# data "template_file" "kafka-exporter-extravars" {
+#   template = file("${path.module}/templates/kafka-exporter-extravars.tpl")
+# }

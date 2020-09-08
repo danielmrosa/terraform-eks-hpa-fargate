@@ -5,13 +5,13 @@ resource "kubernetes_config_map" "aws-auth" {
   }
   data = {
     mapRoles = <<EOF
-- rolearn: ${aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.arn}
+- rolearn: ${aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.arn}
   username: system:node:{{EC2PrivateDNSName}}
   groups:
     - system:bootstrappers
     - system:nodes
 
-- rolearn: ${aws_iam_role.aws-iam-eks-fargate-role-poc-eks-academy.arn}
+- rolearn: ${aws_iam_role.aws-iam-eks-fargate-role-poc-eks-talk-security.arn}
   username: system:node:{{SessionName}}
   groups:
     - system:bootstrappers

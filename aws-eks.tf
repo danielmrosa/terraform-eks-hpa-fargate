@@ -5,7 +5,7 @@ locals {
               /etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.aws-eks-master.endpoint}' \
                                     --b64-cluster-ca '${aws_eks_cluster.aws-eks-master.certificate_authority.0.data}' '${var.cluster-name}'
             EOF
-  k8s-version                 = "1.14"
+  k8s-version                 = "1.16"
   kubernetes-tag-cluster-name = "kubernetes.io/cluster/${var.cluster-name}"
 }
 
@@ -26,7 +26,7 @@ resource "aws_cloudwatch_log_group" "eks-cloudwatch" {
 
 resource "aws_eks_cluster" "aws-eks-master" {
   name                      = var.cluster-name
-  role_arn                  = aws_iam_role.aws-iam-eks-master-poc-eks-academy.arn
+  role_arn                  = aws_iam_role.aws-iam-eks-master-poc-eks-talk-security.arn
   version                   = local.k8s-version
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
@@ -44,15 +44,15 @@ resource "aws_eks_cluster" "aws-eks-master" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.aws-iam-eks-cluster-poc-eks-academy,
-    aws_iam_role_policy_attachment.aws-iam-eks-service-poc-eks-academy,
+    aws_iam_role_policy_attachment.aws-iam-eks-cluster-poc-eks-talk-security,
+    aws_iam_role_policy_attachment.aws-iam-eks-service-poc-eks-talk-security,
     aws_cloudwatch_log_group.eks-cloudwatch
   ]
 }
 
 resource "aws_launch_configuration" "aws-launch-nodes" {
   associate_public_ip_address = false
-  iam_instance_profile        = aws_iam_instance_profile.aws-iam-node-profile-poc-eks-academy.name
+  iam_instance_profile        = aws_iam_instance_profile.aws-iam-node-profile-poc-eks-talk-security.name
   image_id                    = data.aws_ami.eks-worker.id
   instance_type               = "m5.large"
   name_prefix                 = "node-${var.cluster-name}-"
@@ -64,13 +64,13 @@ resource "aws_launch_configuration" "aws-launch-nodes" {
   }
 }
 
-resource "aws_launch_template" "aws-launch-template-academy" {
+resource "aws_launch_template" "aws-launch-template-talk-security" {
   name                        = var.cluster-name
   image_id                    = data.aws_ami.eks-worker.id
   instance_type               = "m5.large"
   user_data                   = base64encode(local.node-userdata)
   iam_instance_profile {
-    name = aws_iam_instance_profile.aws-iam-node-profile-poc-eks-academy.name
+    name = aws_iam_instance_profile.aws-iam-node-profile-poc-eks-talk-security.name
   }
   network_interfaces {
     associate_public_ip_address = false
@@ -91,7 +91,7 @@ resource "aws_autoscaling_group" "aws-autoscaling-group-nodes" {
   mixed_instances_policy {
     launch_template {
       launch_template_specification {
-        launch_template_id = aws_launch_template.aws-launch-template-academy.id
+        launch_template_id = aws_launch_template.aws-launch-template-talk-security.id
       }
     }
     instances_distribution {
@@ -149,21 +149,21 @@ output "eks-certificate_authority" {
   value = aws_eks_cluster.aws-eks-master.certificate_authority.0.data
 }
 
-resource "aws_eks_fargate_profile" "fargate-profile-1" {
-# //Evita sempre recriar
-  lifecycle {
-    ignore_changes = [
-      "cluster_name",
-      "fargate_profile_name",
-      "pod_execution_role_arn",
-      "subnet_ids "
-    ]
-  }
-  cluster_name           = var.cluster-name
-  fargate_profile_name   = "fargate-profile-1"
-  pod_execution_role_arn = aws_iam_role.aws-iam-eks-fargate-role-poc-eks-academy.arn
-  subnet_ids             = data.aws_subnet_ids.subnet-ids-private.ids
-  selector {
-    namespace = "fargate"
-  }
-}
+# resource "aws_eks_fargate_profile" "fargate-profile-1" {
+# # //Evita sempre recriar
+#   lifecycle {
+#     ignore_changes = [
+#       "cluster_name",
+#       "fargate_profile_name",
+#       "pod_execution_role_arn",
+#       "subnet_ids "
+#     ]
+#   }
+#   cluster_name           = var.cluster-name
+#   fargate_profile_name   = "fargate-profile-1"
+#   pod_execution_role_arn = aws_iam_role.aws-iam-eks-fargate-role-poc-eks-talk-security.arn
+#   subnet_ids             = data.aws_subnet_ids.subnet-ids-private.ids
+#   selector {
+#     namespace = "fargate"
+#   }
+# }

@@ -126,77 +126,77 @@ data "aws_iam_policy_document" "aws-external-dns-policy-document-demo" {
   }
 }
 
-resource "aws_iam_policy" "aws-external-dns-policy-poc-eks-academy" {
+resource "aws_iam_policy" "aws-external-dns-policy-poc-eks-talk-security" {
   name   = "aws-external-dns-policy-${var.cluster-name}"
   policy = data.aws_iam_policy_document.aws-external-dns-policy-document-demo.json
 }
 
-resource "aws_iam_role_policy_attachment" "aws-external-dns-attachment-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-external-dns-attachment-poc-eks-talk-security" {
   # name       = "aws-external-dns-attachment-${var.cluster-name}"
-  policy_arn = aws_iam_policy.aws-external-dns-policy-poc-eks-academy.arn
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+  policy_arn = aws_iam_policy.aws-external-dns-policy-poc-eks-talk-security.arn
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_policy" "aws-ingress-policy-poc-eks-academy" {
+resource "aws_iam_policy" "aws-ingress-policy-poc-eks-talk-security" {
   name   = "aws-ingress-policy-${var.cluster-name}"
   policy = data.aws_iam_policy_document.aws-ingress-policy-document-demo.json
 }
 
-resource "aws_iam_role_policy_attachment" "aws-ingress-policy-attachment-poc-eks-academy" {
-  policy_arn = aws_iam_policy.aws-ingress-policy-poc-eks-academy.arn
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+resource "aws_iam_role_policy_attachment" "aws-ingress-policy-attachment-poc-eks-talk-security" {
+  policy_arn = aws_iam_policy.aws-ingress-policy-poc-eks-talk-security.arn
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_policy" "aws-cluster-auto-scaler-policy-poc-eks-academy" {
+resource "aws_iam_policy" "aws-cluster-auto-scaler-policy-poc-eks-talk-security" {
   name   = "ClusterAutoScaler-${var.cluster-name}"
   policy = data.aws_iam_policy_document.aws-cluster-auto-scaler-policy-document-demo.json
 }
 
-resource "aws_iam_role_policy_attachment" "aws-cluster-auto-scaler-attachment-poc-eks-academy" {
-  policy_arn = aws_iam_policy.aws-cluster-auto-scaler-policy-poc-eks-academy.arn
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+resource "aws_iam_role_policy_attachment" "aws-cluster-auto-scaler-attachment-poc-eks-talk-security" {
+  policy_arn = aws_iam_policy.aws-cluster-auto-scaler-policy-poc-eks-talk-security.arn
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_role" "aws-iam-eks-master-poc-eks-academy" {
+resource "aws_iam_role" "aws-iam-eks-master-poc-eks-talk-security" {
   name                  = "eks-role-master-${var.cluster-name}"
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.aws-assume-role-policy-eks-demo.json
 }
 
-resource "aws_iam_role" "aws-iam-eks-nodes-poc-eks-academy" {
+resource "aws_iam_role" "aws-iam-eks-nodes-poc-eks-talk-security" {
   name                  = "eks-role-nodes-${var.cluster-name}"
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.aws-assume-role-policy-ec2-demo.json
 }
 
-resource "aws_iam_role_policy_attachment" "aws-iam-eks-cluster-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-iam-eks-cluster-poc-eks-talk-security" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role      = aws_iam_role.aws-iam-eks-master-poc-eks-academy.name
+  role      = aws_iam_role.aws-iam-eks-master-poc-eks-talk-security.name
 }
 
-resource "aws_iam_role_policy_attachment" "aws-iam-eks-service-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-iam-eks-service-poc-eks-talk-security" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role      = aws_iam_role.aws-iam-eks-master-poc-eks-academy.name
+  role      = aws_iam_role.aws-iam-eks-master-poc-eks-talk-security.name
 }
 
-resource "aws_iam_role_policy_attachment" "aws-iam-eks-node-policy-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-iam-eks-node-policy-poc-eks-talk-security" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_role_policy_attachment" "aws-iam-eks-node-CNI-Policy-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-iam-eks-node-CNI-Policy-poc-eks-talk-security" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_role_policy_attachment" "aws-iam-eks-ec2-container-registry-readOnly-poc-eks-academy" {
+resource "aws_iam_role_policy_attachment" "aws-iam-eks-ec2-container-registry-readOnly-poc-eks-talk-security" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+  role      = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
-resource "aws_iam_instance_profile" "aws-iam-node-profile-poc-eks-academy" {
+resource "aws_iam_instance_profile" "aws-iam-node-profile-poc-eks-talk-security" {
   name = "aws-iam-node-profile-${var.cluster-name}"
-  role = aws_iam_role.aws-iam-eks-nodes-poc-eks-academy.name
+  role = aws_iam_role.aws-iam-eks-nodes-poc-eks-talk-security.name
 }
 
 data "aws_region" "current" {}
@@ -205,8 +205,8 @@ data "aws_caller_identity" "current" {}
 
 
 #Fargate
-resource "aws_iam_role" "aws-iam-eks-fargate-role-poc-eks-academy" {
-  name = "eks-fargate-role-poc-eks-academy"
+resource "aws_iam_role" "aws-iam-eks-fargate-role-poc-eks-talk-security" {
+  name = "eks-fargate-role-poc-eks-talk-security"
   assume_role_policy = jsonencode({
     Statement = [{
       Action    = "sts:AssumeRole"
@@ -220,5 +220,5 @@ resource "aws_iam_role" "aws-iam-eks-fargate-role-poc-eks-academy" {
 }
 resource "aws_iam_role_policy_attachment" "example-AmazonEKSFargatePodExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-  role       = aws_iam_role.aws-iam-eks-fargate-role-poc-eks-academy.name
+  role       = aws_iam_role.aws-iam-eks-fargate-role-poc-eks-talk-security.name
 }

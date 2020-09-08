@@ -42,3 +42,13 @@ resource "aws_route53_record" "kiali-CNAME" {
     lookup(aws_acm_certificate.kiali.domain_validation_options[0], "resource_record_value")
   ]
 }
+
+resource "aws_route53_record" "demo-CNAME" {
+  name    = lookup(aws_acm_certificate.demo.domain_validation_options[0], "resource_record_name")
+  type    = lookup(aws_acm_certificate.demo.domain_validation_options[0], "resource_record_type")
+  ttl     = "300"
+  zone_id = aws_route53_zone.dns-demo.zone_id
+  records = [
+    lookup(aws_acm_certificate.demo.domain_validation_options[0], "resource_record_value")
+  ]
+}

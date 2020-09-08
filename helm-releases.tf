@@ -79,8 +79,7 @@ resource "helm_release" "external-dns" {
   depends_on = [
     kubernetes_cluster_role_binding.tiller,
     kubernetes_service_account.tiller,
-    helm_release.aws-alb-ingress-controller,
-    helm_release.kube-metrics-adapter
+    helm_release.aws-alb-ingress-controller
   ]
 }
 
@@ -114,23 +113,23 @@ resource "helm_release" "aws-alb-ingress-controller" {
 }
 
 
-resource "helm_release" "consul" {
-  name       = "consul"
-  repository = "stable"
-  chart      = "stable/consul"
-  version    = "3.9.2"
-  namespace  = "qa"
+# resource "helm_release" "consul" {
+#   name       = "consul"
+#   repository = "stable"
+#   chart      = "stable/consul"
+#   version    = "3.9.2"
+#   namespace  = "qa"
 
-  set {
-    name  = "uiService.enabled"
-    value = "true"
-  }
+#   set {
+#     name  = "uiService.enabled"
+#     value = "true"
+#   }
 
-  depends_on = [
-    kubernetes_cluster_role_binding.tiller,
-    kubernetes_service_account.tiller,
-  ]
-}
+#   depends_on = [
+#     kubernetes_cluster_role_binding.tiller,
+#     kubernetes_service_account.tiller,
+#   ]
+# }
 
 resource "helm_release" "istio-init" {
   name       = "istio-init"
@@ -204,39 +203,39 @@ resource "helm_release" "istio" {
   }
 }
 
-resource "helm_release" "kafka" {
-  name       = "kafka"
-  repository = "confluentinc"
-  chart      = "confluentinc/cp-helm-charts"
-  version    = "0.1.0"
-  namespace  = "qa"
-  timeout = "600"
+# resource "helm_release" "kafka" {
+#   name       = "kafka"
+#   repository = "confluentinc"
+#   chart      = "confluentinc/cp-helm-charts"
+#   version    = "0.1.0"
+#   namespace  = "qa"
+#   timeout = "600"
   
-  set {
-    name  = "cp-schema-registry.enabled"
-    value = "false"
-  }
-  set {
-    name  = "cp-kafka-rest.enabled"
-    value = "false"
-  }
-  set {
-    name  = "cp-kafka-connect.enabled"
-    value = "false"
-  }
-  set {
-    name  = "cp-ksql-server.enabled"
-    value = "false"
-  }
-  set {
-    name  = "cp-control-center.enabled"
-    value = "false"
-  }
-  depends_on = [
-    kubernetes_cluster_role_binding.tiller,
-    kubernetes_service_account.tiller,
-  ]
-}
+#   set {
+#     name  = "cp-schema-registry.enabled"
+#     value = "false"
+#   }
+#   set {
+#     name  = "cp-kafka-rest.enabled"
+#     value = "false"
+#   }
+#   set {
+#     name  = "cp-kafka-connect.enabled"
+#     value = "false"
+#   }
+#   set {
+#     name  = "cp-ksql-server.enabled"
+#     value = "false"
+#   }
+#   set {
+#     name  = "cp-control-center.enabled"
+#     value = "false"
+#   }
+#   depends_on = [
+#     kubernetes_cluster_role_binding.tiller,
+#     kubernetes_service_account.tiller,
+#   ]
+# }
 
 resource "helm_release" "postgres" {
   name       = "postgres"

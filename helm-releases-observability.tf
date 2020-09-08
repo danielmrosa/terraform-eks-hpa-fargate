@@ -21,7 +21,7 @@ resource "helm_release" "kube-metrics-adapter" {
 
   set {
     name = "prometheus.url"
-    value = "http://prometheus-operator-prometheus.observability.svc:9090"
+    value = "http://prometheus.istio-system.svc:9090"
   }
   depends_on = [
     kubernetes_cluster_role_binding.tiller,
@@ -96,7 +96,7 @@ resource "helm_release" "jaeger-tracing" {
   chart      = "jaegertracing/jaeger"
   version    = "0.18.2"
   namespace  = "observability"
-  timeout = "600"
+  timeout = "2400"
   values = [data.template_file.jaeger-extravars.rendered]
   
   set {
@@ -194,6 +194,10 @@ resource "helm_release" "grafana" {
     name = "service.port"
     value = "3000"
   }
+  set {
+    name = "image.tag"
+    value = "7.0.5"
+  }
 }
 
 resource "helm_release" "elasticsearch" {
@@ -262,7 +266,7 @@ resource "helm_release" "kiali" {
   name       = "kiali"
   chart      = "${path.module}/charts/kiali"
   namespace  = "istio-system"
-  timeout = "600"
+  timeout = "2400"
   values = [data.template_file.kiali-extravars.rendered]
 
   depends_on = [
@@ -277,20 +281,20 @@ resource "helm_release" "kiali" {
 
 }
 
-resource "helm_release" "kafka-exporter" {
-  name       = "kafka-exporter"
-  chart      = "${path.module}/charts/kafka-exporter"
-  namespace  = "qa"
-  timeout = "600"
-  values = [data.template_file.kafka-exporter-extravars.rendered]
+# resource "helm_release" "kafka-exporter" {
+#   name       = "kafka-exporter"
+#   chart      = "${path.module}/charts/kafka-exporter"
+#   namespace  = "qa"
+#   timeout = "600"
+#   values = [data.template_file.kafka-exporter-extravars.rendered]
 
-  depends_on = [
-    kubernetes_cluster_role_binding.tiller,
-    kubernetes_service_account.tiller,
-  ]
+#   depends_on = [
+#     kubernetes_cluster_role_binding.tiller,
+#     kubernetes_service_account.tiller,
+#   ]
   
-  force_update = true
+#   force_update = true
 
-  recreate_pods = true
+#   recreate_pods = true
 
-}
+# }

@@ -10,7 +10,7 @@ variable "vpc-cidr" {
 
 variable "cluster-name" {
   type    = "string"
-  default = "academy"
+  default = "talk-security"
 }
 
 variable "domain-name" {

@@ -1,13 +1,13 @@
 defaultRules:
   create: false
 kubeApiServer:
-  enabled: false
+  enabled: true
 kubelet:
-  enabled: false
+  enabled: true
 kubeControllerManager:
   enabled: false
 coreDns:
-  enabled: false
+  enabled: true
 kubeEtcd:
   enabled: false
 kubeScheduler:
